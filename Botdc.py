@@ -1,3 +1,5 @@
+# By Kennedy Junior
+# github.com/kennedyjunior
 import os
 import discord
 from discord import app_commands
