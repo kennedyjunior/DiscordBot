@@ -5,7 +5,7 @@ from discord.ext import commands
 from dotenv import load_dotenv
 import aiohttp
 import asyncio
-import api
+#import api
 
 
 intents = discord.Intents.default()
