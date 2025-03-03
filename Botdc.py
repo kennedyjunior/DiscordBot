@@ -129,6 +129,17 @@ async def periodic_task():
         
         await asyncio.sleep(300) 
 
-
+static void UpdatePresence()
+{
+    DiscordRichPresence discordPresence;
+    memset(&discordPresence, 0, sizeof(discordPresence));
+    discordPresence.state = "de cs 1.6 e Minecraft";
+    discordPresence.details = "Jogando nos melhores servidores";
+    discordPresence.largeImageKey = "662da54b442b69_58489469_nkhfjelgpmiqo";
+    discordPresence.smallImageText = "Rogue - Level 100";
+    discordPresence.partyId = "ae488379-351d-4a4f-ad32-2b9b01c91657";
+    discordPresence.joinSecret = "MTI4NzM0OjFpMmhuZToxMjMxMjM= ";
+    Discord_UpdatePresence(&discordPresence);
+}
 
 bot.run(TOKEN)
