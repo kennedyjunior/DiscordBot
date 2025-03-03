@@ -5,6 +5,7 @@ from discord.ext import commands
 from dotenv import load_dotenv
 import aiohttp
 import asyncio
+import api
 
 
 intents = discord.Intents.default()
@@ -15,10 +16,7 @@ URLa = os.getenv("URL_API")
 TOKEN = os.getenv("TOKEN")
 GUILD_ID = os.getenv("GUILD_ID")
 guild = client.get_guild(GUILD_ID)
-if guild:
-        print("\n🔹 Lista de canais disponíveis:")
-        for channel in guild.channels:
-            print(f"📌 {channel.name} - ID: {channel.id}")
+
 intents.members = True
 intents.guild_messages = True
 intents.message_content = True
@@ -64,7 +62,7 @@ async def ipmine(interaction: discord.Interaction):
 
 @bot.event
 async def on_member_join(member):
-    channel = discord.utils.get(member.guild.channels, name="moderator-only")
+    channel = discord.utils.get(member.guild.channels, name="boas-vindas_2")
     if channel:
         embed = discord.Embed(
             title="Seja Bem-vindo à Logikoz Network!",
@@ -81,7 +79,14 @@ async def on_member_join(member):
 
         await channel.send(embed=embed)
 
+@bot.tree.command(name="gif", description="Envie um GIF aleatório ou um específico", guild=discord.Object(id=GUILD_ID))
+async def gif(interaction: discord.Interaction, link: str = None):
+    gif_url = link if link else ("https://i.pinimg.com/736x/a9/c3/4b/a9c34bd18ce6c93ac20b926236c3cb0f.jpg")
 
+    embed = discord.Embed(title="🎬 Aqui está seu GIF!", color=discord.Color.blue())
+    embed.set_image(url=gif_url)
+
+    await interaction.response.send_message(embed=embed)
 
 @bot.command()
 async def status(ctx):
@@ -96,11 +101,34 @@ async def status(ctx):
     for mensagem in mensagens:
         await ctx.send(mensagem)
 
-async def editar_msg_api():
-    channel = client.get_channel(1344131381974011954)
-    message = await channel.fetch_message[1344153674091462677]
+async def fazer_consulta_http(server):
+    URL1 = URLa.replace("{SERVERS}", server)
+    headers = {
+        'Authorization': f'Bearer {BEARERt}'  
+    }
+    canal = discord.utils.get(server.text_channels, name="status")
+    async with aiohttp.ClientSession() as session:
+        async with session.get(URL1, headers=headers) as response:
+            if response.status == 200:
+                dados = await response.json()
+                estado = dados['attributes']['current_state']
+                print(f"Consulta bem-sucedida:{server}: {estado}")
 
-
+                if estado == "running":
+                        await canal.send(f"✅ O servidor {server} está **ativo**! 🚀")
+                else:
+                    await canal.send(f"⚠️ O servidor {server} está **{estado}**!")
+            else:
+                print(f"Erro na consulta HTTP ({server}): {response.status}")
+    
+async def periodic_task():
+    while True:
+        servers = ['ecf8d84d', '7de1b202', '535e7a9d', '77bd75fa', 'c7e05776', '74ca04f4', '7659a99b']
+        for server in servers: 
+            await fazer_consulta_http(server)
         
+        await asyncio.sleep(300) 
+
+
 
 bot.run(TOKEN)
